@@ -71,18 +71,18 @@
       throw new Error(`discord-${response.status}`);
     }
   }
-  async function enviarRespostaNao(textoDaTela) {
+  async function enviarResposta(textoDaTela, opcao) {
     if(!SUBMISSION_ENDPOINT) throw new Error('not-configured');
     const webhookUrl=new URL(SUBMISSION_ENDPOINT);
     webhookUrl.searchParams.set('wait','true');
     const payload={
       allowed_mentions:{parse:[]},
       embeds:[{
-        title:'Resposta: Não',
+        title:`Resposta: ${opcao}`,
         color:0xA85261,
         fields:[
           {name:'Texto da tela',value:textoDaTela.slice(0,1024)},
-          {name:'Opção selecionada',value:'Não'}
+          {name:'Opção selecionada',value:opcao}
         ]
       }]
     };
@@ -91,6 +91,10 @@
   }
   function textoDaTela() {
     return [...screen.querySelectorAll('h1,h2,.lead')].map(node=>node.textContent.trim()).filter(Boolean).join('\n');
+  }
+  function registrarResposta(opcao, texto) {
+    // A entrega é independente da navegação; falhas ficam silenciosas.
+    enviarResposta(texto, opcao).catch(() => {});
   }
   function handleNo() {
     const texto=textoDaTela();
@@ -102,15 +106,18 @@
     else if(confirmationStep < 2) confirm(confirmationStep + 1);
     else sadEnd();
 
-    enviarRespostaNao(texto).catch(error => {
-      const message=error.message==='not-configured'
-        ? 'O envio ainda não foi configurado. Configure o endpoint no script.js para enviar sua resposta.'
-        : error.message.startsWith('discord-')
-          ? `Não foi possível enviar a resposta (HTTP ${error.message.slice(8)}). Tente novamente.`
-          : 'Não foi possível enviar a resposta. Confira sua conexão e tente novamente.';
-      const lead=screen.querySelector('.lead');
-      if(lead) lead.textContent=`${texto.split('\n').slice(-1)[0]} ${message}`;
-    });
+    registrarResposta('Não', texto);
+  }
+  function handleYes() {
+    const texto=textoDaTela();
+    const isConfirmation=screen.querySelector('[data-action="confirm"]') !== null;
+    registrarResposta('Sim', texto);
+    if(!isConfirmation) celebration();
+    else {
+      const next=confirmationStep+1;
+      if(next>=3) sadEnd();
+      else confirm(next);
+    }
   }
   async function submitForm(event) {
     event.preventDefault();
@@ -122,8 +129,8 @@
     const dados={local:formEl.elements.place.value.trim(),data:formEl.elements.date.value,anel:formEl.querySelector('input[name="ring"]:checked').value,quantidadeDeFilhos:Number(formEl.elements.children.value)};
     submitting=true;const button=formEl.querySelector('[type="submit"]');button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Enviando…';
     try { await enviarFormulario(dados); show(`<div>${cat(false)}<h2>Obrigado 😊.<br>Está tudo pronto para a cerimônia</h2><div class="heart-line" aria-hidden="true">✦ ♡ ✦</div></div>`);screen.querySelector('.art')?.classList.add('celebrate'); }
-    catch(error) { submitting=false;button.disabled=false;button.removeAttribute('aria-busy');button.textContent='Concluir 💍';formError.hidden=false;formError.textContent=error.message==='not-configured'?'O envio ainda não foi configurado. Seus dados continuam preenchidos; configure o endpoint no script.js e tente novamente.':error.message.startsWith('discord-')?`O Discord recusou a mensagem (HTTP ${error.message.slice(8)}). Confira a URL do webhook e tente novamente; seus dados continuam preenchidos.`:'Não foi possível enviar agora. Seus dados continuam preenchidos; confira sua conexão e tente novamente.'; }
+    catch { submitting=false;button.disabled=false;button.removeAttribute('aria-busy');button.textContent='Concluir 💍';formError.hidden=true;formError.textContent=''; }
   }
-  screen.addEventListener('click', event=>{const action=event.target.closest('[data-action]')?.dataset.action;if(action==='yes') celebration();else if(action==='no'||action==='return') handleNo();else if(action==='confirm'){const next=confirmationStep+1;if(next>=3)sadEnd();else confirm(next);}});
+  screen.addEventListener('click', event=>{const action=event.target.closest('[data-action]')?.dataset.action;if(action==='yes'||action==='confirm') handleYes();else if(action==='no'||action==='return') handleNo();});
   start();
 })();

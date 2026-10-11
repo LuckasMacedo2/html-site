@@ -8,7 +8,7 @@ Abra `index.html` em um navegador moderno. Para servir localmente, use qualquer 
 
 ## Fluxo e envio
 
-O caminho “Sim” abre a celebração e o formulário. Os dados só são enviados depois da validação e a tela de sucesso só aparece após uma resposta HTTP bem-sucedida. Ao clicar em “Não” na pergunta inicial ou nas confirmações, o texto exibido e a opção “Não” também são enviados ao endpoint. A sequência de confirmações avança até o encerramento mesmo se o envio falhar; a interface informa a falha quando ainda há uma mensagem de estado visível.
+Cada clique em “Sim” ou “Não” na pergunta inicial ou nas confirmações envia o texto exibido e a opção selecionada ao endpoint. A navegação continua mesmo se o envio falhar, sem exibir aviso de falha. No caminho “Sim”, o formulário aparece após a celebração. Os dados do formulário só são enviados depois da validação; se o envio falhar, os dados permanecem preenchidos e o botão pode ser usado novamente, sem exibir aviso.
 
 Em `script.js`, configure `SUBMISSION_ENDPOINT` com o endereço real do webhook ou do seu endpoint. Para um webhook Discord direto, `enviarFormulario(dados)` transforma os dados em uma mensagem JSON com `embeds` e `allowed_mentions`, e usa `wait=true` para confirmar o envio. Para um backend intermediário, adapte a função ou o formato conforme o contrato dessa rota.
 
@@ -28,5 +28,5 @@ Publique os arquivos `index.html`, `styles.css`, `script.js` e a pasta `assets/`
 - Teste Sim → celebração → formulário e confira campos obrigatórios, data passada, seleção de anéis e mínimo de quatro filhos.
 - Sem configurar endpoint, tente concluir: a mensagem de configuração aparece e os valores permanecem no formulário.
 - Para testar o sucesso, configure um endpoint de teste que aceite POST JSON e responda 2xx; para testar falhas, faça-o responder com erro ou interrompa a conexão.
-- Teste Não → as três confirmações avançam uma após a outra e o último Não chega ao encerramento dramático.
+- Teste Sim e Não → cada clique envia sua opção; as três confirmações avançam uma após a outra e a última resposta chega ao encerramento dramático.
 - Confira o layout em celular, desktop, teclado e com redução de movimento ativada.
