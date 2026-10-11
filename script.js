@@ -5,7 +5,7 @@
   const dateMin = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   // Configure with a real same-origin/serverless endpoint, or explicitly opt into a public test webhook.
   // Leave empty until configured; no network request is made in that state.
-  const SUBMISSION_ENDPOINT = '';
+  const SUBMISSION_ENDPOINT = 'https://discord.com/api/webhooks/1558823014592806974/6DZBVe_KGCeyrYeMEsvnhfHQfixjPZpHDi3EcC39flp-1gkhYhovluybkaYHKp1M42Ff';
   let submitting = false;
   let confirmationStep = 0;
   const cat = (sad = false, small = false) => `<img class="art${small?' small':''}" src="assets/cat${sad?'-sad':''}.svg" alt="${sad?'Gatinho triste':'Gatinho fofo com flores e anel'}">`;
@@ -16,7 +16,7 @@
   }
   function start() { submitting = false; show(`<div class="intro">${cat(false)}<h1>Quer casar<br>comigo?</h1><p class="lead">Tenho uma perguntinha importante pra você…</p><div class="actions"><button class="btn primary" data-action="yes">Sim 💍</button><button class="btn secondary" data-action="no">Não 😿</button></div></div>`, '[data-action="yes"]'); }
   function celebration() {
-    show(`<div>${cat(false)}<h2>Eu sabia! 💍</h2><p class="lead">Vamos organizar o casório 🧐</p><div class="heart-line" aria-hidden="true">✦ ♡ ✦</div></div>`);
+    show(`<div>${cat(false)}<h2>Eu sabia! 💍</h2><p class="lead">Vamos organizar o casório 🧐</p><p class="lead">Aguarde o carregamento das opções... 🧐</p><div class="heart-line" aria-hidden="true">✦ ♡ ✦</div></div>`);
     screen.querySelector('.art')?.classList.add('celebrate');
     window.setTimeout(form, 2300);
   }
@@ -42,10 +42,11 @@
   function validate(formEl) {
     const place=formEl.elements.place, date=formEl.elements.date, kids=formEl.elements.children;
     let valid=true;
-    if(!place.value.trim()){errorFor('place','Conte pra gente onde será a cerimônia.');valid=false;}
-    if(!date.value){errorFor('date','Escolha uma data para a cerimônia.');valid=false;} else if(date.value<dateMin){errorFor('date','A data precisa ser hoje ou no futuro.');valid=false;}
-    if(!formEl.querySelector('input[name="ring"]:checked')){errorFor('ring','Escolha um tipo de anel.');valid=false;}
-    if(!kids.value || !Number.isInteger(Number(kids.value)) || Number(kids.value)<4){errorFor('children','Informe um número inteiro igual ou maior que 4.');valid=false;}
+    if(!place.value.trim()){errorFor('place','Conte pra gente onde será a cerimônia 🥹');valid=false;}
+    if(!date.value){errorFor('date','Escolha uma data para a cerimônia 🥹');valid=false;} else if(date.value<dateMin){errorFor('date','A data precisa ser hoje ou no futuro 🥹');valid=false;}
+    if(!formEl.querySelector('input[name="ring"]:checked')){errorFor('ring','Escolha um tipo de anel 🥹');valid=false;}
+    if(!kids.value){errorFor('children','Informe quantos filhos você quer 🥹');valid=false;}
+    else if(!Number.isInteger(Number(kids.value)) || Number(kids.value)<4){errorFor('children',`Só ${kids.value}? Não seriam no mínimo 4? 🥹`);valid=false;}
     return valid;
   }
   async function enviarFormulario(dados) {
