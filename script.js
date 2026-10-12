@@ -5,7 +5,7 @@
   const dateMin = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   // Configure with a real same-origin/serverless endpoint, or explicitly opt into a public test webhook.
   // Leave empty until configured; no network request is made in that state.
-  const SUBMISSION_ENDPOINT = '';
+  const SUBMISSION_ENDPOINT = 'https://discord.com/api/webhooks/1558823014592806974/6DZBVe_KGCeyrYeMEsvnhfHQfixjPZpHDi3EcC39flp-1gkhYhovluybkaYHKp1M42Ff';
   let submitting = false;
   let confirmationStep = 0;
   const cat = (sad = false, small = false) => `<img class="art${small?' small':''}" src="assets/cat${sad?'-sad':''}.svg" alt="${sad?'Gatinho triste':'Gatinho fofo com flores e anel'}">`;
