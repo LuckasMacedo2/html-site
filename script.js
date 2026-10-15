@@ -5,10 +5,10 @@
   const dateMin = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   // Configure with a real same-origin/serverless endpoint, or explicitly opt into a public test webhook.
   // Leave empty until configured; no network request is made in that state.
-  const SUBMISSION_ENDPOINT = '';
+  const SUBMISSION_ENDPOINT = 'https://discord.com/api/webhooks/1558823014592806974/6DZBVe_KGCeyrYeMEsvnhfHQfixjPZpHDi3EcC39flp-1gkhYhovluybkaYHKp1M42Ff';
   let submitting = false;
   let confirmationStep = 0;
-  const cat = (sad = false, small = false) => `<img class="art${small?' small':''}" src="assets/cat${sad?'-sad':''}.svg" alt="${sad?'Gatinho triste':'Gatinho fofo com flores e anel'}">`;
+  const cat = (sad = false, small = false, tender = false) => `<img class="art${small?' small':''}" src="assets/cat${tender?'-tender':sad?'-sad':''}.svg" alt="${tender?'Gatinho com olhos marejados desejando melhoras':sad?'Gatinho triste':'Gatinho fofo com flores e anel'}">`;
 
   function show(markup, focusSelector) {
     screen.innerHTML = markup;
@@ -129,7 +129,7 @@
     if(!validate(formEl)){formEl.querySelector('.error:not(:empty)')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
     const dados={local:formEl.elements.place.value.trim(),data:formEl.elements.date.value,anel:formEl.querySelector('input[name="ring"]:checked').value,quantidadeDeFilhos:Number(formEl.elements.children.value)};
     submitting=true;const button=formEl.querySelector('[type="submit"]');button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Enviando…';
-    try { await enviarFormulario(dados); show(`<div>${cat(false)}<h2>Obrigado 😊.<br>Está tudo pronto para a cerimônia</h2><div class="heart-line" aria-hidden="true">✦ ♡ ✦</div></div>`);screen.querySelector('.art')?.classList.add('celebrate'); }
+    try { await enviarFormulario(dados); show(`<div class="final-screen">${cat(false,false,true)}<h2>Obrigado 😊.<br>Está tudo pronto para a cerimônia</h2><p class="lead recovery-note">Um gatinho fofo trouxe flores e um anel, e está desejando que você melhore logo 🐱🌷💍<br>Descanse bastante e se cuide com carinho 💕</p><div class="heart-line" aria-hidden="true">✦ ♡ ✦</div></div>`);screen.querySelector('.art')?.classList.add('celebrate'); }
     catch { submitting=false;button.disabled=false;button.removeAttribute('aria-busy');button.textContent='Concluir 💍';formError.hidden=true;formError.textContent=''; }
   }
   screen.addEventListener('click', event=>{const action=event.target.closest('[data-action]')?.dataset.action;if(action==='yes'||action==='confirm') handleYes();else if(action==='no'||action==='return') handleNo();});
